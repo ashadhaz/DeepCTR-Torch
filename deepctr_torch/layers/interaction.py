@@ -351,6 +351,7 @@ class InteractingLayer(nn.Module):
         self.use_res = use_res
         self.scaling = scaling
         self.seed = seed
+        self.att_scores_all = None
 
         self.W_Query = nn.Parameter(torch.Tensor(embedding_size, embedding_size))
         self.W_key = nn.Parameter(torch.Tensor(embedding_size, embedding_size))
@@ -383,6 +384,12 @@ class InteractingLayer(nn.Module):
         if self.scaling:
             inner_product /= self.att_embedding_size ** 0.5
         self.normalized_att_scores = F.softmax(inner_product, dim=-1)  # head_num None F F
+
+        if self.att_scores_all is None:
+            self.att_scores_all = self.normalized_att_scores
+        else:
+            self.att_scores_all += self.normalized_att_scores
+            
         result = torch.matmul(self.normalized_att_scores, values)  # head_num None F D/head_num
 
         result = torch.cat(torch.split(result, 1, ), dim=-1)
