@@ -387,10 +387,10 @@ class InteractingLayer(nn.Module):
 
         if self.att_scores_all is None:
             self.att_scores_all = self.normalized_att_scores
-            print("None")
-        elif self.att_scores_all.shape == self.normalized_att_scores:
+            # print("None")
+        elif self.att_scores_all.shape == self.normalized_att_scores.shape:
             self.att_scores_all += self.normalized_att_scores
-            print("adding")
+            # print("adding")
         result = torch.matmul(self.normalized_att_scores, values)  # head_num None F D/head_num
 
         result = torch.cat(torch.split(result, 1, ), dim=-1)
