@@ -386,13 +386,8 @@ class InteractingLayer(nn.Module):
             inner_product /= self.att_embedding_size ** 0.5
         self.normalized_att_scores = F.softmax(inner_product, dim=-1)  # head_num None F F
 
-        if self.att_scores_all is None:
-            self.att_scores_all = self.normalized_att_scores
-            self.att_grad = self.normalized_att_scores.grad.detach().numpy()
-        elif self.att_scores_all.shape == self.normalized_att_scores.shape:
-            self.att_scores_all += self.normalized_att_scores
-            self.att_grad += self.normalized_att_scores.grad.detach().numpy()
-            
+        
+
         result = torch.matmul(self.normalized_att_scores, values)  # head_num None F D/head_num
 
         result = torch.cat(torch.split(result, 1, ), dim=-1)
@@ -400,6 +395,13 @@ class InteractingLayer(nn.Module):
         if self.use_res:
             result += torch.tensordot(inputs, self.W_Res, dims=([-1], [0]))
         result = F.relu(result)
+
+        if self.att_scores_all is None:
+            self.att_scores_all = self.normalized_att_scores
+            self.att_grad = torch.autograd.grad(self.normalized_att_scores, inputs)
+        elif self.att_scores_all.shape == self.normalized_att_scores.shape:
+            self.att_scores_all += self.normalized_att_scores
+            self.att_grad += torch.autograd.grad(self.normalized_att_scores, inputs)
 
         return result
 
