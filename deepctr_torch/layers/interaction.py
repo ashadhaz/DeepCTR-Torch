@@ -387,6 +387,14 @@ class InteractingLayer(nn.Module):
         self.normalized_att_scores = F.softmax(inner_product, dim=-1)  # head_num None F F
 
         
+        if self.att_scores_all is None:
+            self.att_scores_all = self.normalized_att_scores
+            # self.att_grad = torch.autograd.grad(self.normalized_att_scores, inputs)
+        elif self.att_scores_all.shape == self.normalized_att_scores.shape:
+            self.att_scores_all += self.normalized_att_scores
+            # self.att_grad += torch.autograd.grad(self.normalized_att_scores, inputs)
+        
+        
 
         result = torch.matmul(self.normalized_att_scores, values)  # head_num None F D/head_num
 
@@ -396,14 +404,8 @@ class InteractingLayer(nn.Module):
             result += torch.tensordot(inputs, self.W_Res, dims=([-1], [0]))
         result = F.relu(result)
 
-        if self.att_scores_all is None:
-            self.att_scores_all = self.normalized_att_scores
-            self.att_grad = torch.autograd.grad(self.normalized_att_scores, inputs)
-        elif self.att_scores_all.shape == self.normalized_att_scores.shape:
-            self.att_scores_all += self.normalized_att_scores
-            self.att_grad += torch.autograd.grad(self.normalized_att_scores, inputs)
-
-        return result
+        
+        return result, self.normalized_att_scores
 
 
 class CrossNet(nn.Module):
