@@ -106,9 +106,11 @@ class AutoInt(BaseModel):
             pass
 
         y_pred = self.out(logit)
+  
 
         for at_sc in self.norm_att_score_list:
-            gr = torch.autograd.grad(y_pred, at_sc)
-            self.att_score_list.append(gr)
+            gr = torch.autograd.grad(torch.unbind(y_pred), at_sc, allow_unused = True, retain_graph = True)
+            if gr:
+                self.att_score_list.append(gr)
 
         return y_pred
