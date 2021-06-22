@@ -352,7 +352,6 @@ class InteractingLayer(nn.Module):
         self.scaling = scaling
         self.seed = seed
         self.att_scores_all = None
-        self.att_grad = None
 
         self.W_Query = nn.Parameter(torch.Tensor(embedding_size, embedding_size))
         self.W_key = nn.Parameter(torch.Tensor(embedding_size, embedding_size))
@@ -389,13 +388,9 @@ class InteractingLayer(nn.Module):
         
         if self.att_scores_all is None:
             self.att_scores_all = self.normalized_att_scores
-            # self.att_grad = torch.autograd.grad(self.normalized_att_scores, inputs)
         elif self.att_scores_all.shape == self.normalized_att_scores.shape:
             self.att_scores_all += self.normalized_att_scores
-            # self.att_grad += torch.autograd.grad(self.normalized_att_scores, inputs)
         
-        
-
         result = torch.matmul(self.normalized_att_scores, values)  # head_num None F D/head_num
 
         result = torch.cat(torch.split(result, 1, ), dim=-1)
@@ -405,7 +400,7 @@ class InteractingLayer(nn.Module):
         result = F.relu(result)
 
         
-        return result, self.normalized_att_scores
+        return result
 
 
 class CrossNet(nn.Module):

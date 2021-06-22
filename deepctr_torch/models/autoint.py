@@ -50,8 +50,6 @@ class AutoInt(BaseModel):
         field_num = len(self.embedding_dict)
 
         embedding_size = self.embedding_size
-        self.norm_att_score_list = []
-        self.att_score_list = []
 
         if len(dnn_hidden_units) and att_layer_num > 0:
             dnn_linear_in_feature = dnn_hidden_units[-1] + field_num * embedding_size
@@ -86,8 +84,7 @@ class AutoInt(BaseModel):
 
 
         for layer in self.int_layers:
-            att_input, norm_att_score = layer(att_input)
-            self.norm_att_score_list.append(norm_att_score)
+            att_input = layer(att_input)
 
         att_output = torch.flatten(att_input, start_dim=1)
 
@@ -107,10 +104,4 @@ class AutoInt(BaseModel):
 
         y_pred = self.out(logit)
   
-
-        for at_sc in self.norm_att_score_list:
-            gr = torch.autograd.grad(torch.unbind(y_pred), at_sc, allow_unused = True, retain_graph = True)
-            if gr:
-                self.att_score_list.append(gr)
-
         return y_pred
