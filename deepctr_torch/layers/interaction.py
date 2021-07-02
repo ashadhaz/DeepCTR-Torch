@@ -89,6 +89,8 @@ Tongwen](https://arxiv.org/pdf/1905.09433.pdf)
             nn.ReLU()
         )
         self.A = None
+        self.Z = None
+        self.V = None
         self.to(device)
 
     def forward(self, inputs):
@@ -96,10 +98,11 @@ Tongwen](https://arxiv.org/pdf/1905.09433.pdf)
             raise ValueError(
                 "Unexpected inputs dimensions %d, expect to be 3 dimensions" % (len(inputs.shape)))
         Z = torch.mean(inputs, dim=-1, out=None)
+        self.Z = Z
         A = self.excitation(Z)
         self.A = A
         V = torch.mul(inputs, torch.unsqueeze(A, dim=2))
-
+        self.V = V
         return V
 
 
