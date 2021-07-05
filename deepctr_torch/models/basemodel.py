@@ -320,8 +320,12 @@ class BaseModel(nn.Module):
                             for name, metric_fun in self.metrics.items():
                                 if name not in train_result:
                                     train_result[name] = []
-                                train_result[name].append(metric_fun(
-                                    y.cpu().data.numpy(), y_pred.cpu().data.numpy().astype("float64")))
+                                if name == 'focal':
+                                    train_result[name].append(metric_fun(
+                                        y, y_pred).cpu().numpy().astype("float64"))
+                                else:    
+                                    train_result[name].append(metric_fun(
+                                        y.cpu().data.numpy(), y_pred.cpu().data.numpy().astype("float64")))
 
 
             except KeyboardInterrupt:
