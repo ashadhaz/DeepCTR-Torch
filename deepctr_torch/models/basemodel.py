@@ -134,6 +134,7 @@ class BaseModel(nn.Module):
         self.history = History()
 
     def binary_focal_loss_with_logits(
+        self,
         input: torch.Tensor,
         target: torch.Tensor,
         alpha: float = 0.25,
@@ -525,7 +526,7 @@ class BaseModel(nn.Module):
                 loss_func = F.mse_loss
             elif loss == "mae":
                 loss_func = F.l1_loss
-            elif loss == 'focal'
+            elif loss == 'focal':
                 loss_func = self.binary_focal_loss_with_logits
             else:
                 raise NotImplementedError
