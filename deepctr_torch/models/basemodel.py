@@ -172,9 +172,6 @@ class BaseModel(nn.Module):
         if not isinstance(input, torch.Tensor):
             raise TypeError("Input type is not a torch.Tensor. Got {}".format(type(input)))
 
-        if not len(input.shape) >= 2:
-            raise ValueError("Invalid input shape, we expect BxCx*. Got: {}".format(input.shape))
-
         if input.size(0) != target.size(0):
             raise ValueError(
                 'Expected input batch_size ({}) to match target batch_size ({}).'.format(input.size(0), target.size(0))
