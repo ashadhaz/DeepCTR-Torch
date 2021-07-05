@@ -378,7 +378,10 @@ class BaseModel(nn.Module):
         pred_ans = self.predict(x, batch_size)
         eval_result = {}
         for name, metric_fun in self.metrics.items():
-            eval_result[name] = metric_fun(y, pred_ans)
+            if name == 'focal':
+                eval_result[name] = metric_fun(torch.tensor(y), torch.tensor(pred_ans))
+            else:
+                eval_result[name] = metric_fun(y, pred_ans)
         return eval_result
 
     def predict(self, x, batch_size=256):
