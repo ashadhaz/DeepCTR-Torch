@@ -333,7 +333,10 @@ class BaseModel(nn.Module):
             # Add epoch_logs
             epoch_logs["loss"] = total_loss_epoch / sample_num
             for name, result in train_result.items():
-                epoch_logs[name] = np.sum(result) / steps_per_epoch
+                try:
+                    epoch_logs[name] = np.sum(result) / steps_per_epoch
+                except:
+                    pass
 
             if do_validation:
                 eval_result = self.evaluate(val_x, val_y, batch_size)
