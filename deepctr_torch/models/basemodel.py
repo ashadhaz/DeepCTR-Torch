@@ -554,6 +554,8 @@ class BaseModel(nn.Module):
                         metrics_[metric] = log_loss
                 if metric == "auc":
                     metrics_[metric] = roc_auc_score
+                if metric == "focal":
+                    metrics_[metric] = self.binary_focal_loss_with_logits
                 if metric == "mse":
                     metrics_[metric] = mean_squared_error
                 if metric == "accuracy" or metric == "acc":
