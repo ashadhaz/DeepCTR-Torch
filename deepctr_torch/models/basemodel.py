@@ -319,7 +319,7 @@ class BaseModel(nn.Module):
                                     train_result[name] = []
                                 if name == 'focal':
                                     train_result[name].append(metric_fun(
-                                        y, y_pred).cpu().data.numpy().astype("float64"))
+                                        y, y_pred, reduction = 'sum').cpu().data.numpy().astype("float64"))
                                 else:    
                                     train_result[name].append(metric_fun(
                                         y.cpu().data.numpy(), y_pred.cpu().data.numpy().astype("float64")))
